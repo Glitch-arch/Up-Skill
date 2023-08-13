@@ -1,15 +1,19 @@
 import {dbconnect} from "./config/dbconfig.js";
 import express from 'express'
 import dotenv from 'dotenv'
-import user from "./Models/User.js";
+import user from './Routes/user.js'
+import fileUpload from 'express-fileupload'
+import {cloudinaryConnect} from "./config/cloudinary.js";
 
 dotenv.config()
 
 dbconnect()
+cloudinaryConnect()
 const app = express()
 
 // Why do i have to use this ?? To parse ig
 app.use(express.json())
+app.use(fileUpload())
 
 // Server Function
 const server = () => {
@@ -26,6 +30,7 @@ const server = () => {
 }
 server();
 
+app.use('api/v1/upload', Upload)
 app.use('api/v1', user)
 
 //  Basic route
