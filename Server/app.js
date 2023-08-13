@@ -1,7 +1,11 @@
-const express = require('express')
-const {response} = require("express");
-require('dotenv').config();
+import {dbconnect} from "./config/dbconfig.js";
+import express from 'express'
+import dotenv from 'dotenv'
+import user from "./Models/User.js";
 
+dotenv.config()
+
+dbconnect()
 const app = express()
 
 // Why do i have to use this ?? To parse ig

@@ -1,9 +1,11 @@
 import User from "../Models/User";
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import dotenv from "dotenv";
 
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
-require("dotenv").config()
+dotenv.config()
 
+// After Signup redirection to signIn and to avoid that what should be dn ??
 
 // SIGNUP ROUTE
 export const signup = async (req, res) => {
@@ -40,8 +42,9 @@ export const signup = async (req, res) => {
 }
 
 // SIGNING ROUTE
+// TRY CATCH Pending
 
-const signIn = (req, res) => {
+export const login = (req, res) => {
 
     // check if userExists or not
     // If it does check the password
@@ -82,9 +85,25 @@ const signIn = (req, res) => {
                     expiresIn: "24h"
                 })
 
+            // user = user.toObject()
+            user.token = token
+            user.password = undefined
+
+            //     Creating a cookie in which we will send the JWT token
+            // Cookie name , data , options ( valid , expiry )
+            const options = {
+                expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+                httpOnly: true
+            }
+            res.cookie("token", token, options).status(200).json({
+                success: true,
+                token,
+                user,
+                message: 'User logged in successfully'
+            })
 
         } else {
-
+            console.log("Got some error in jwt part ")
         }
     }
 
