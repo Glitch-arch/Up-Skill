@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import user from './Routes/user.js'
 import fileUpload from 'express-fileupload'
 import {cloudinaryConnect} from "./config/cloudinary.js";
+import FileUpload from './Routes/FileUpload.js'
 
 dotenv.config()
 
@@ -11,6 +12,7 @@ dbconnect()
 cloudinaryConnect()
 const app = express()
 
+// Middlewares
 // Why do i have to use this ?? To parse ig
 app.use(express.json())
 app.use(fileUpload())
@@ -30,8 +32,8 @@ const server = () => {
 }
 server();
 
-app.use('api/v1/upload', Upload)
-app.use('api/v1', user)
+app.use('/api/v1/upload', FileUpload)
+app.use('/api/v1', user)
 
 //  Basic route
 app.get("/", (req, res) => {
