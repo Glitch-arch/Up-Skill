@@ -15,7 +15,10 @@ const app = express()
 // Middlewares
 // Why do i have to use this ?? To parse ig
 app.use(express.json())
-app.use(fileUpload())
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: '/tmp'
+}))
 
 // Server Function
 const server = () => {
