@@ -16,10 +16,6 @@ const OTPSchema = new Schema({
         default: Date.now(),
         expires: 5 * 60,
     },
-    contactNumber: {
-        type: Number,
-        trim: true
-    }
 
 })
 

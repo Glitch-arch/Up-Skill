@@ -2,8 +2,43 @@ import User from "../Models/User";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import dotenv from "dotenv";
+import otpGenerator from "otp-generator"
+import OTP from "../Models/OTP.js";
+import Profile from "../Models/Profile.js";
 
 dotenv.config()
+
+
+// OTP Generation Logic
+const otpSend = async (req, res) => {
+    const {email} = req.body
+
+    // Authentication
+    const isEmail = User.findOne(email)
+    if(isEmail){
+        return res.status(400).json({
+            success:false,
+            message: 'Email already exist '
+        })
+    }
+
+    // Not yet unique
+    const otp = otpGenerator(6, {lowerCaseAlphabets: false upperCaseAlphabets: false, specialChars: false })
+    const otpPayload = { otp:otp , email: email}
+    const dbentry = OTP.create(otpPayload)
+    if(dbentry){
+        console.log('success')
+    }
+    else{
+        console.log('error')
+    }
+
+    res.status(200).json({
+        success: true,
+        message:'otp sent'
+        data: otpPayload
+    })
+}
 
 // After Signup redirection to signIn and to avoid that what should be dn ??
 
@@ -11,7 +46,22 @@ dotenv.config()
 export const signup = async (req, res) => {
 
     const data = req.body
-    const {email, password, user, role} = data;
+    const {firstName,lastName,email, password,confirmPassword,  accountType,otp,contactNo} = data;
+
+    if(!firstName || !lastName || !email || !password || !confirmPassword || otp){
+        return res.status(400).json({
+            success: false,
+            message: 'error'
+        })
+    }
+
+    if(confirmPassword !== password){
+        return res.status(400).json({
+            success: false,
+            message: 'error'
+        })
+    }
+
 
 //     User already exist or Not
     const doesExist = User.findOne({email});
@@ -25,8 +75,35 @@ export const signup = async (req, res) => {
         //     Password hashing
         //     Enter it in the db
 
+        //     Find most recent OTP
+        const recentOtp = await OTP.find({email}).sort({createdAt:-1}).limit(1);
+
+        if(!recentOtp){
+            //      Throw error
+            return res.status(400).json({
+            success: false,
+            message: 'OTP not found in DB'
+
+        })
+        }
+        if(otp !== recentOtp){
+
+            return res.status(400).json({
+            success: false,
+            message: ' Caught an error while checking otp'
+
+        })
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10)
-        const newUser = await User.create({email, password: hashedPassword, user, role})
+
+        const profileDetails = await Profile.create(
+            {contactNumber: contactNo, gender: null, dateOfBirth: null,about: null}
+        )
+        const newUser = await User.create(
+            {email, password: hashedPassword, firstName,lastName, accountType, additionalDetails: profileDetails,image: "UrlPending"}
+        )
+
         if (newUser) {
             console.log("New user created")
             return res.status(200).json({
