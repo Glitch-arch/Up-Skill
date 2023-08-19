@@ -5,37 +5,37 @@ import dotenv from "dotenv";
 import otpGenerator from "otp-generator"
 import OTP from "../Models/OTP.js";
 import Profile from "../Models/Profile.js";
+import {mailSender} from "../Utils/mailSender.js";
 
 dotenv.config()
 
 
 // OTP Generation Logic
-const otpSend = async (req, res) => {
+export const otpSend = async (req, res) => {
     const {email} = req.body
 
     // Authentication
     const isEmail = User.findOne(email)
-    if(isEmail){
+    if (isEmail) {
         return res.status(400).json({
-            success:false,
+            success: false,
             message: 'Email already exist '
         })
     }
 
     // Not yet unique
-    const otp = otpGenerator(6, {lowerCaseAlphabets: false upperCaseAlphabets: false, specialChars: false })
-    const otpPayload = { otp:otp , email: email}
+    const otp = otpGenerator(6, {lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false})
+    const otpPayload = {otp: otp, email: email}
     const dbentry = OTP.create(otpPayload)
-    if(dbentry){
+    if (dbentry) {
         console.log('success')
-    }
-    else{
+    } else {
         console.log('error')
     }
 
     res.status(200).json({
         success: true,
-        message:'otp sent'
+        message: 'otp sent',
         data: otpPayload
     })
 }
@@ -46,16 +46,16 @@ const otpSend = async (req, res) => {
 export const signup = async (req, res) => {
 
     const data = req.body
-    const {firstName,lastName,email, password,confirmPassword,  accountType,otp,contactNo} = data;
+    const {firstName, lastName, email, password, confirmPassword, accountType, otp, contactNo} = data;
 
-    if(!firstName || !lastName || !email || !password || !confirmPassword || otp){
+    if (!firstName || !lastName || !email || !password || !confirmPassword || otp) {
         return res.status(400).json({
             success: false,
             message: 'error'
         })
     }
 
-    if(confirmPassword !== password){
+    if (confirmPassword !== password) {
         return res.status(400).json({
             success: false,
             message: 'error'
@@ -76,32 +76,40 @@ export const signup = async (req, res) => {
         //     Enter it in the db
 
         //     Find most recent OTP
-        const recentOtp = await OTP.find({email}).sort({createdAt:-1}).limit(1);
+        const recentOtp = await OTP.find({email}).sort({createdAt: -1}).limit(1);
 
-        if(!recentOtp){
+        if (!recentOtp) {
             //      Throw error
             return res.status(400).json({
-            success: false,
-            message: 'OTP not found in DB'
+                success: false,
+                message: 'OTP not found in DB'
 
-        })
+            })
         }
-        if(otp !== recentOtp){
+        if (otp !== recentOtp) {
 
             return res.status(400).json({
-            success: false,
-            message: ' Caught an error while checking otp'
+                success: false,
+                message: ' Caught an error while checking otp'
 
-        })
+            })
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)
 
         const profileDetails = await Profile.create(
-            {contactNumber: contactNo, gender: null, dateOfBirth: null,about: null}
+            {contactNumber: contactNo, gender: null, dateOfBirth: null, about: null}
         )
         const newUser = await User.create(
-            {email, password: hashedPassword, firstName,lastName, accountType, additionalDetails: profileDetails,image: "UrlPending"}
+            {
+                email,
+                password: hashedPassword,
+                firstName,
+                lastName,
+                accountType,
+                additionalDetails: profileDetails,
+                image: "UrlPending //Dicebear"
+            }
         )
 
         if (newUser) {
@@ -137,7 +145,7 @@ export const login = (req, res) => {
         })
     }
 
-    const doesExist = User.findOne({email})
+    const doesExist = User.findOne({email}).populate('additionalDetails')
 
     if (!doesExist) {
         // Redirect it to signUp page
@@ -183,6 +191,41 @@ export const login = (req, res) => {
             console.log("Got some error in jwt part ")
         }
     }
+}
 
+// Change Password
+
+export const changePassword = async (req, res) => {
+
+    // data form req
+    // validation
+    // if correct change password in db
+    // send mail password updated
+
+    const {email, oldPassword, newPassword, confirmPassword} = req.data
+
+    const dbPass = await User.findOne({email})
+
+    if (!email || !oldPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword) {
+        return res.status.json({
+            success: false,
+            message: ' Enter correct data  '
+        })
+    }
+
+    if (!dbPass) {
+        return res.status.json({
+            success: false,
+            message: 'Email doesnt exist '
+        })
+    }
+
+
+    if (bcrypt.compare(oldPassword, dbPass.password)) {
+        dbPass.password = newPassword
+        await User.updateOne({email: email}, {password: newPassword})
+    }
+
+    await mailSender(email, 'password Changed', " Password Changed");
 
 }
