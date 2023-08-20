@@ -174,8 +174,9 @@ export const login = (req, res) => {
             doesExist.token = token
             doesExist.password = undefined
 
-            //     Creating a cookie in which we will send the JWT token
+            // Creating a cookie in which we will send the JWT token
             // Cookie name , data , options ( valid , expiry )
+
             const options = {
                 expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
                 httpOnly: true
