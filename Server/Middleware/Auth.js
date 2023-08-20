@@ -37,7 +37,7 @@ export const isStudent = (req, res, next) => {
 
     try {
 
-        const {role} = req.user.role
+        const {role} = req.user.accountType
 
         if (role === 'student') {
             next()
@@ -62,7 +62,7 @@ export const isInstructor = (req, res, next) => {
 
     try {
 
-        const {role} = req.user.role
+        const {role} = req.user.accountType
 
         if (role === 'instructor') {
             next()

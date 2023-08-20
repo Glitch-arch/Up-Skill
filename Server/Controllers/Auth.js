@@ -136,7 +136,7 @@ export const login = (req, res) => {
     // If correct redirect it to dashboard and Generate a JWT Token / Cookies
 
     const data = req.body
-    const {email, password, user, role} = data
+    const {firstName, lastName, email, password, confirmPassword, accountType, otp, contactNo} = data;
 
     if (!email && !password) {
         return res.status.json({
@@ -171,8 +171,8 @@ export const login = (req, res) => {
                 })
 
             // user = user.toObject()
-            user.token = token
-            user.password = undefined
+            doesExist.token = token
+            doesExist.password = undefined
 
             //     Creating a cookie in which we will send the JWT token
             // Cookie name , data , options ( valid , expiry )
@@ -183,7 +183,7 @@ export const login = (req, res) => {
             res.cookie("token", token, options).status(200).json({
                 success: true,
                 token,
-                user,
+                doesExist,
                 message: 'User logged in successfully'
             })
 
