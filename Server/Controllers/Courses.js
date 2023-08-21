@@ -1,7 +1,10 @@
-import course from "../Models/Course.js";
+import Course from "../Models/Course.js";
 import {uploadImageToCloudinary} from "../Utils/imageUploader.js";
 import User from "../Models/User.js";
+import dotenv from "dotenv";
+import Tags from "../Models/Tags.js";
 
+dotenv.config()
 
 const createCourse = async (req, res) => {
 
@@ -18,12 +21,65 @@ const createCourse = async (req, res) => {
         const {courseName, courseDescription, whatYouWillLearn, price, tag} = req.body
         const thumbnail = req.files.thumbnailImage;
 
+
         if (!courseName || !courseDescription || !whatYoutWillLearn || !price || !tag || !thumbnail) {
             return res.status(400).json({
                 success: false,
                 message: "All fields are required"
             })
         }
+
+        const userId = req.user.id
+        const instructorDetails = await User.findById(userId)
+
+        if (!instructorDetails) {
+            //     Throw error
+        }
+
+        //     Check given tag is valid -> needed for postman
+        const tagDetails = await Tag.findById(tag)
+
+        if (!tagDetails) {
+            //     throw error
+        }
+
+        //     Upload to cloudinary
+
+        const thumbnailImage = await uploadImageToCloudinary(thumbnail, process.env.FOLDER_NAME)
+
+        const newCourse = await Course.create({
+            courseName,
+            courseDescription,
+            instructor: instructorDetails._id,
+            whatYouWillLearn: whatYouWillLearn,
+            price,
+            tag: tagDetails._id
+        })
+
+        // add course to insturctor user schema
+
+        await User.findByIdAndUpdate(
+            {_id: instructorDetails._id},
+            {
+                $push: {
+                    courses: newCourse._id
+                }
+            }
+        )
+
+        await Tags.findByIdAndUpdate({_id: tag}, {
+            $push: {
+                courses: newCourse._id
+            }
+        })
+
+        return res.status(200).json({
+
+            success: true,
+            message: ' Course Created '
+
+        })
+
 
     } catch (error) {
 
