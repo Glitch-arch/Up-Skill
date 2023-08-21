@@ -6,7 +6,7 @@ import Tags from "../Models/Tags.js";
 
 dotenv.config()
 
-const createCourse = async (req, res) => {
+export const createCourse = async (req, res) => {
 
     // data fetch
     // validations
@@ -91,3 +91,35 @@ const createCourse = async (req, res) => {
     }
 }
 
+export const showAllCourses = async (req, res) => {
+
+    try {
+
+        const allCourses = await Course.find({}, {
+            courseName: true,
+            price: true,
+            thumbnail: true,
+            instructor: true,
+            ratingAndReview: true,
+            studentEnrolled: true
+        }).populate('instructor')
+
+
+        return res.status(200).json({
+            success: true,
+            message: 'Fetched all courses successfully',
+            data: allCourses
+        })
+
+    } catch (error) {
+
+        console.log(error)
+        res.status(400).json({
+            success: false,
+            message: ' Caught an error while getting all courses '
+
+        })
+
+    }
+
+}
