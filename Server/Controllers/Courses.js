@@ -56,7 +56,7 @@ export const createCourse = async (req, res) => {
             tag: tagDetails._id
         })
 
-        // add course to insturctor user schema
+        // add course to instructor user schema
 
         await User.findByIdAndUpdate(
             {_id: instructorDetails._id},
