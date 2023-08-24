@@ -55,3 +55,96 @@ export const createSubSection = async (req, res) => {
 
 }
 
+
+export  const deleteSubSection = async (req,res)=>{
+
+    try {
+
+        const {subSectionId} = req.body
+        if(!subSectionId){
+
+            res.status(400).json({
+                success: false,
+                message: 'All fields are required'
+
+            })
+        }
+
+        let deleteSubS = await Subsection.findByIdAndDelete(subSectionId)
+
+        return res.status.json({
+            success: true,
+            message: ' SubSection deleted successfully '
+        })
+
+    } catch (error){
+        console.log(error)
+        res.status(400).json({
+            success: false,
+            message: ' Caught an error while deleting subSection'
+        })
+    }
+
+}
+
+export const updateSubSection = async (req,res) => {
+
+    try {
+        const { title, timeDuration, description, subSectionId } = req.body
+        const file = req.files.videoFile
+
+        if (!subSectionId || !title || !timeDuration || !description) {
+            res.status(400).json({
+                success: false,
+                message: 'All fields are required'
+            })
+        }
+
+        const videoDetails = uploadImageToCloudinary(file,process.env.FOLDER_NAME)
+
+        //  what about deleting that video on cloudinary ??
+
+        Subsection.findByIdAndUpdate(subSectionId,
+            {title:title, timeDuration:timeDuration, description:description, videoUrl:videoDetails.secure_url }
+            , {new:true}
+        )
+
+        res.status(200).json({
+            success: true,
+            message: 'SubSection updated '
+        })
+
+    } catch (error){
+        console.log(error)
+        res.status(400).json({
+            success: false,
+            message: ' Caught an error while updating subSection'
+        })
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
