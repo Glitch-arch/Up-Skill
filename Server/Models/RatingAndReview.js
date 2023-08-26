@@ -5,13 +5,22 @@ const {Schema} = mongoose
 const ratingAndReviewSchema = new Schema({
     user: {
         type: String,
+        required: true
     },
     rating: {
         type: Number,
+        required: true
     },
     review: {
-        type: String
+        type: String,
+        required: true
     },
+    course: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course',
+        index: true,
+        required: true
+    }
 })
 
 const model = mongoose.model("ratingAndReview", ratingAndReviewSchema)

@@ -1,7 +1,7 @@
 import Course from "../Models/Course.js";
 import {uploadImageToCloudinary} from "../Utils/imageUploader.js";
 import User from "../Models/User.js";
-import dotenv from "dotenv";
+import dotenv, {populate} from "dotenv";
 import Tags from "../Models/Tags.js";
 
 dotenv.config()
@@ -120,6 +120,50 @@ export const showAllCourses = async (req, res) => {
 
         })
 
+    }
+
+}
+
+export const getCourseDetails = async (req, res) => {
+
+    try {
+
+        const {courseId} = req.body
+
+        const courseDetails = await Course.find(
+            {_id: courseId})
+            .populate({
+                path: 'instructor',
+                populate: {
+                    path: 'additionalDetails'
+                }
+            })
+            .populate('category')
+            .populate('ratingAndReview')
+            .populate({path: 'courseContent', populate: {path: 'subSection'}})
+            .exec()
+
+        if (!courseDetails) {
+            return res.status(400).json({
+                success: false,
+                message: 'Course not found',
+                data: courseDetails
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: ' Course details fetched successfully'
+        })
+
+
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({
+            success: false,
+            message: ' Caught an error while fetching all courses'
+
+        })
     }
 
 }

@@ -15,6 +15,12 @@
 # misc
 .DS_Store
 /Server/.env
+
+/Server/.env.local
+/Server/.env.development.local
+/Server/.env.test.local
+/Server/.env.production.local
+
 .env.local
 .env.development.local
 .env.test.local
