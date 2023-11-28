@@ -1,45 +1,64 @@
-import {dbconnect} from "./config/dbconfig.js";
-import express from 'express'
-import dotenv from 'dotenv'
-import user from './Routes/user.js'
-import fileUpload from 'express-fileupload'
-import {cloudinaryConnect} from "./config/cloudinary.js";
-import FileUpload from './Routes/FileUpload.js'
+import { dbconnect } from "./config/dbconfig.js";
 
-dotenv.config()
+import express from "express";
+import dotenv from "dotenv";
 
-dbconnect()
-cloudinaryConnect()
-const app = express()
+// Routes
+import userRoute from "./Routes/user.js";
+import courseRoute from "./Routes/Course.js";
+import paymentRoute from "./Routes/Payments.js";
+import profileRoute from "./Routes/Profile.js";
+
+// Some Functions
+import fileUpload from "express-fileupload";
+import { cloudinaryConnect } from "./config/cloudinary.js";
+import FileUpload from "./Routes/FileUpload.js";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+
+const PORT = process.env.PORT || 4000;
+
+// Loading environment variables from .env file
+dotenv.config();
+const app = express();
+// Connecting to database
+dbconnect();
 
 // Middlewares
-// Why do i have to use this ?? To parse ig
-app.use(express.json())
-app.use(fileUpload({
+app.use(express.json());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+  })
+);
+app.use(
+  fileUpload({
     useTempFiles: true,
-    tempFileDir: '/tmp'
-}))
+    tempFileDir: "/tmp/",
+  })
+);
 
-// Server Function
-const server = () => {
+// Connecting to cloudinary
+cloudinaryConnect();
 
-    app.listen(process.env.PORT, (error) => {
-        if (error) {
-            console.log(error)
-        } else {
-            console.log("Server running on port")
+// Setting up routes
+app.use("/api/v1/auth", userRoute);
+app.use("/api/v1/profile", profileRoute);
+app.use("/api/v1/course", courseRoute);
+app.use("/api/v1/payment", paymentRoute);
+// app.use("/api/v1/reach", contactUsRoute);
 
-        }
-    })
-
-}
-server();
-
-app.use('/api/v1/upload', FileUpload)
-app.use('/api/v1', user)
-
-//  Basic route
+// Testing the server
 app.get("/", (req, res) => {
-    console.log("Hitting get req on server")
-    res.body.json({})
-})
+  return res.json({
+    success: true,
+    message: "Your server is up and running ...",
+  });
+});
+
+// Listening to the server
+app.listen(PORT, () => {
+  console.log(`App is listening at ${PORT}`);
+});
