@@ -1,5 +1,5 @@
 # Project Description
-StudyNotion is a fully functional ed-tech platform that enables users to create, consume, and rate educational content. The platform is built using the MERN stack, which includes ReactJS, NodeJS, MongoDB, and ExpressJS. StudyNotion aims to provide:
+UpSkill is a fully functional ed-tech platform that enables users to create, consume, and rate educational content. The platform is built using the MERN stack, which includes ReactJS, NodeJS, MongoDB, and ExpressJS. UpSkill aims to provide:
 - A seamless and interactive learning experience for students, making education more accessible and engaging.
 - A platform for instructors to showcase their expertise and connect with learners across the globe. In the following sections, we will cover the technical details of the platform, including:
   - System architecture: The high-level overview of the platform's components and diagrams of the architecture.
@@ -11,9 +11,9 @@ StudyNotion is a fully functional ed-tech platform that enables users to create,
   - Future Enhancements: The list of potential future enhancements to the platform, explanation of how these enhancements would improve the platform, estimated timeline and priority for implementing these enhancements.
 
 # BackEnd
-Description of the Back-end Architecture: StudyNotion uses a monolithic architecture, with the backend built using Node.js and Express.js, and MongoDB as the primary database.
+Description of the Back-end Architecture: UpSkill uses a monolithic architecture, with the backend built using Node.js and Express.js, and MongoDB as the primary database.
 
-Features and Functionalities of the Back-end: The back end of StudyNotion provides a range of features and functionalities, including:
+Features and Functionalities of the Back-end: The back end of UpSkill provides a range of features and functionalities, including:
 - User authentication and authorization: Students and instructors can sign up and log in to the platform using their email addresses and password. The platform also supports OTP (One-Time Password) verification and forgot password functionality for added security.
 - Course management: Instructors can create, read, update, and delete courses, as well as manage course content and media. Students can view and rate courses.
 - Payment Integration: Students will purchase and enrol on courses by completing the checkout flow that is followed by Razorpay integration for payment handling.
@@ -31,7 +31,7 @@ Frameworks, Libraries, and Tools used: The back end of StudyNotion uses a range 
 
 # API Design
 
-The StudyNotion platform's API is designed following the REST architectural style. The API is implemented using Node.js and Express.js. It uses JSON for data exchange and follows standard HTTP request methods such as GET, POST, PUT, and DELETE. Sample list of API endpoints and their functionalities:
+The UpSkill platform's API is designed following the REST architectural style. The API is implemented using Node.js and Express.js. It uses JSON for data exchange and follows standard HTTP request methods such as GET, POST, PUT, and DELETE. Sample list of API endpoints and their functionalities:
 
 1. /api/auth/signup (POST) - Create a new user (student or instructor) account.
 2. /api/auth/login (POST) – Log in using existing credentials and generate a JWT token.
@@ -56,5 +56,5 @@ The StudyNotion platform's API is designed following the REST architectural styl
 15. DELETE /api/courses/:id: Delete a course by ID
   - Response: A success message indicating that the course has been deleted.
 
-
+Note -> FrontEnd comming Soon...
   
